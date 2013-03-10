@@ -113,7 +113,7 @@ class ModelView(Base):
         metadatas = ('width', 'align', 'fixed', 'search', 'stype', 'searchoptions')
         for field in grid.render_fields.values():
             metadata = dict(search=0, sortable=1, id=field.key, name=field.key)
-            searchoptions = dict(sopt=['eq', 'cn'])
+            searchoptions = dict(sopt=['eq', 'ne', 'cn'])
             limitedsearch = False
             if field.is_relation:
                 metadata.update(width=100, sortable=0)
@@ -137,7 +137,7 @@ class ModelView(Base):
                 metadata.update(search=1)
                 limitedsearch = True
             if limitedsearch:
-                searchoptions = dict(sopt=['eq'])
+                searchoptions = dict(sopt=['eq', 'ne'])
             if metadata['search']:
                 metadata['searchoptions'] = searchoptions
             metadata = dict(json=dumps(metadata))
