@@ -78,6 +78,8 @@ class ModelView(Base):
                     if op == 'cn':
                         value = '%%%s%%' % value
                         filter = field.ilike(value)
+                    else if op == 'ne':
+                        filter = field!=value
                     else:
                         filter = field==value
                     collection = collection.filter(filter)
