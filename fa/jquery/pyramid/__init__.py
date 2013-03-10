@@ -114,6 +114,7 @@ class ModelView(Base):
         for field in grid.render_fields.values():
             metadata = dict(search=0, sortable=1, id=field.key, name=field.key)
             searchoptions = dict(sopt=['eq', 'cn'])
+            limitedsearch = False
             if field.is_relation:
                 metadata.update(width=100, sortable=0)
             elif isinstance(field.type, (utils.Color, utils.Slider)):
@@ -125,10 +126,18 @@ class ModelView(Base):
                 metadata.update(search=1)
             elif isinstance(field.type, (fatypes.Date, fatypes.Integer)):
                 metadata.update(width=70, align='center')
+                metadata.update(search=1)
+                limitedsearch = True
             elif isinstance(field.type, fatypes.DateTime):
                 metadata.update(width=120, align='center')
+                metadata.update(search=1)
+                limitedsearch = True
             elif isinstance(field.type, fatypes.Boolean):
                 metadata.update(width=30, align='center')
+                metadata.update(search=1)
+                limitedsearch = True
+            if limitedsearch:
+                searchoptions = dict(sopt=['eq'])
             if metadata['search']:
                 metadata['searchoptions'] = searchoptions
             metadata = dict(json=dumps(metadata))
