@@ -31,7 +31,7 @@ $.fa.extend({
         options['pager_id'] = '#'+pager.attr('id');
         table.jqGrid(settings);
         table.jqGrid('navGrid', options.pager_id,
-                     {search:true}); 
+                     {search:true}, {},{},{},{multipleSearch:true}); 
         $('#add_'+table.attr('id'))
             .unbind('click')
             .click(function() { editRow(); });

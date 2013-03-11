@@ -25,6 +25,9 @@ from fa.jquery import utils
 from fa.jquery.renderers import ellipsys
 import logging
 
+import json
+from sqlalchemy import or_, and_
+
 _ = TranslationStringFactory('fa_jquery')
 
 class ModelView(Base):
@@ -73,20 +76,34 @@ class ModelView(Base):
             if 'searchField' in params:
                 field = fields.get(params['searchField'], None)
                 if field:
-                    op = params['searchOper']
-                    value = params['searchString']
-                    if op == 'cn':
-                        value = '%%%s%%' % value
-                        filter = field.ilike(value)
-                    elif op == 'ne':
-                        filter = field!=value
-                    else:
-                        filter = field==value
+                    filter = self.get_page_search_filter(field, params['searchOper'], params['searchString'])
                     collection = collection.filter(filter)
+            if 'filters' in params:
+                filters = json.loads(params['filters'])
+                clauses = []
+                for rule in filters['rules']:
+                    field = fields.get(rule['field'], None)
+                    if field:
+                        filter = self.get_page_search_filter(field, rule['op'], rule['data'])
+                        clauses.append(filter)
+                if filters['groupOp'] == 'AND':
+                    collection = collection.filter(and_(*clauses))
+                else:
+                    collection = collection.filter(or_(*clauses))
             kwargs.update(collection=collection)
         if 'items_per_page' not in kwargs:
             kwargs.update(items_per_page=int(self.request.GET.get('rows', 20)))
         return Base.get_page(self, **kwargs)
+
+    def get_page_search_filter(self, field, op, value):
+        if op == 'cn':
+            value = '%%%s%%' % value
+            filter = field.ilike(value)
+        elif op == 'ne':
+            filter = field!=value
+        else:
+            filter = field==value
+        return filter
 
     def render_xhr_format(self, fs=None, **kwargs):
         resp = Base.render_xhr_format(self, fs=fs, **kwargs)
