@@ -95,7 +95,8 @@ class ModelView(Base):
             kwargs.update(items_per_page=int(self.request.GET.get('rows', 20)))
         return Base.get_page(self, **kwargs)
 
-    def get_page_search_filter(self, field, op, value):
+    @staticmethod
+    def get_page_search_filter(field, op, value):
         if op == 'cn':
             value = '%%%s%%' % value
             filter = field.ilike(value)
