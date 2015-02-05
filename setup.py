@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-version = '0.9.5-bluej100'
+version = '0.9.5-bluej100-2'
 
 long_description = open("README.txt").read()
 long_description += """
